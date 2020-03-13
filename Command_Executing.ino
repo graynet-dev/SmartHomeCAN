@@ -18,7 +18,7 @@ if ((Long && !AlreadyEx) || (!Long && EXE))
  if  (Command_Type == DIGITAL_INVERT) digitalWrite (device [device_addr(dev_Type)][DEVICE_PIN],!digitalRead(device [device_addr(dev_Type)][DEVICE_PIN]));
                                   }
                                                                            
-                          else if ((device [device_addr(dev_Type)][DEVICE_VID] & 0xF) == PWM_WRITE)
+                          else if ((device [device_addr(dev_Type)][DEVICE_VID] & 0xF) == PWMWRITE)
                                   {
      if (Command_Type == PWM_SETTING)  device [device_addr(dev_Type)][DEVICE_VALUE] = Command_Value; 
 else if (Command_Type == PWM_TURN_ON)  {if (device [device_addr(dev_Type)][DEVICE_VALUE] + Command_Value <= 255 ) device [device_addr(dev_Type)][DEVICE_VALUE]+=Command_Value; else device [device_addr(dev_Type)][DEVICE_VALUE] = 255;}
@@ -28,7 +28,7 @@ else if (Command_Type == PWM_TURN_OFF) {if (device [device_addr(dev_Type)][DEVIC
                                   }
 
  
-                           else if ((device [device_addr(dev_Type)][DEVICE_VID] & 0xF) == PROCENT_WRITE){}
+                           else if ((device [device_addr(dev_Type)][DEVICE_VID] & 0xF) == PROCENTWRITE){}
   
                            else if ((device [device_addr(dev_Type)][DEVICE_VID] & 0xF) == IMPULSE_GND || (device [device_addr(dev_Type)][DEVICE_VID] & 0xF) == IMPULSE_POWER){
 
