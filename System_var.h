@@ -26,34 +26,6 @@ const byte intervalStatus = 1;              // интервал таймера �
 #define MAX_NoTAnswerCOUNT 5       //число счетчика неответов, превысив которое, делаем статус узла "Мёртв"
 bool printstatus = 0;
 
-// ~~~~~~~~~~~~~~~~~~ниже выбираем узлы, которые подключены к сети CAN. 1 - подключен к CAN, 0 - НЕ подключен
-
-const bool NodeCANpresence[NODS_QUANTITY] = 
-{
-  0, //  broadcast,                            //0
-  0, //  node_1_Net_center_PC,                 //1
-  0, //  node_2_Net_center_oraPi1,             //2
-  0, //  node_3_Net_center_oraPi2,             //3 
-  1, //  node_4_Net_center_Due1,               //4
-  1, //  node_5_Net_center_Due2,               //5
-  1, //  node_6_Hallway_net_center,            //6
-  1, //  node_7_Hallway_main,                  //7
-  1, //  node_8_Hallway_light,                 //8
-  1, //  node_9_Kitchen_net_center,            //9
-  1, //  node_10_Kitchen_main,                  //10
-  1, //  node_11_Kitchen_light,                 //11
-  1, //  node_12_WC_main,                       //12
-  1, //  node_13_WC_waterleak,                  //13
-  1, //  node_14_Bathroom_main,                 //14
-  1, //  node_15_Boxroom_main,                  //15
-  0, //  node_16_Balcony_meteo,                 //16                          
-  0, //  node_17_Loggia_main,                   //17                             
-  1, //  node_18_Loggia_recuperator,            //18                             
-  1, //  node_19_Livingroom_main,               //19                             
-  1, //  node_20_Bedroom_main,                  //20                             
-  1, //  node_21_Cabinet_main,                  //21                             
-    };
-
 #endif 
 
 #if defined (type_node_slave) or defined (type_node_mk) 
@@ -117,3 +89,5 @@ uint32_t bufferEXElongCOM_Timer [bufferEXElongCOM_size] = {0}; // таймер �
 byte countRepeat;
 uint32_t timercountRepeat = 0;
 bool timercountRepeat_ON = 0; 
+
+#define Sensors(...)  [](void)->size_t{ byte _[] = { __VA_ARGS__}; return sizeof(_)/sizeof(_[0]); }(),[](void)->byte *{ static byte _[] = { __VA_ARGS__}; return _; }()
