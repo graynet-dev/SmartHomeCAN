@@ -127,25 +127,24 @@ else if (Command_TX_cell[i][flagTimerCommand]==1 && curMillis - queueTX_Timer[i]
 
 
 
-void StatusTX (byte addr) {
-byte Data[8] = {0};
-#ifdef type_node_master
-Data[0] = Status_COUNTER;
-Data[1] = ss;
-Data[2] = mm;
-Data[3] = hh;
-Data[4] = dd;
-#endif 
-TX (1,STATUS,addr,00,EXTENDED, DATA_CANFRAME, 8, Data);
-// вызов TX (priority, тип сообщения, адрес получателя, тип устройства, тип ID, тип FRAME, длина поля данных кадра, data)
- Status_COUNTER++;
-    }
+void StatusTX (byte addr) 
+{
+  byte Data[8] = {0};
+  #ifdef type_node_master
+  Data[0] = Status_COUNTER;
+  Data[1] = ss;
+  Data[2] = mm;
+  Data[3] = hh;
+  Data[4] = dd;
+  #endif 
+  TX (1,STATUS,addr,00,EXTENDED, DATA_CANFRAME, 8, Data);
+  // вызов TX (priority, тип сообщения, адрес получателя, тип устройства, тип ID, тип FRAME, длина поля данных кадра, data)
+   Status_COUNTER++;
+}
+
 
 
 #ifdef  type_node_master
-
-
-
 
 void SendAccident (byte AlarmAddr) {
 if (NodeCANpresence [AlarmAddr] == 0 || AlarmAddr == node_address) return;
@@ -158,6 +157,8 @@ if (flag_alarmAccident && !alarmAccident_send[AlarmAddr]) { TX (1  , ACCIDENT , 
 
 
 #if defined (type_node_slave) or defined (type_node_mk) 
+
+
 
 void DataStreamSend(){
  bool Periodical_timer = 0;  
@@ -212,5 +213,15 @@ if ((parameter [i][TYPE_VAR]& 0xF) == BYTE_4 || (parameter [i][TYPE_VAR]& 0xF) =
 
 
 
+void SendRequestParam (bool Priority, byte Target_Address,  byte Param_Type, const size_t siZE, byte *Sensor_numb) 
+{
+    byte sensors_quantity;
+    if (siZE<8) sensors_quantity = siZE; else sensors_quantity = 7;
+    if (Sensor_numb[0]==0) sensors_quantity = 1;
+    byte daTa[sensors_quantity+1]; 
+    Parameter_COUNTER++; daTa[0]=Parameter_COUNTER;
+    for (byte i = 1 ; i<sensors_quantity+1; i++) daTa [i] = Sensor_numb[i-1];
+    TX (Priority, PARAMETER_REQUEST, Target_Address, Param_Type, BIT_29, DATA_CANFRAME, sizeof(daTa), daTa);
+}
  
  
