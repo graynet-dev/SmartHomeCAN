@@ -14,16 +14,16 @@ bool priority, can_frame_type, can_ID_type, RTR_11BIT;
 can_ID_type    = (rxId_can & 0x80000000)>>31;  //извлекаем тип ID        (0 - 11bit, 1 - 29 bit)
 can_frame_type = (rxId_can & 0x40000000)>>30;  //извлекаем тип СAN FRAME (0 - Data,  1 - Remote)   
 
-if (can_frame_type && ((rxId_can & 0x20000000)>>29)) RTR_11BIT = 1;
-else RTR_11BIT = 0;                            //если 29 бит единичка, то это RTR 11 бит
+if      (can_frame_type && ((rxId_can & 0x20000000)>>29))    RTR_11BIT = 1;  //если в RTR 29й бит 1, то это RTR 11 бит
+else if (can_frame_type && ((rxId_can & 0x20000000)>>29)==0) RTR_11BIT = 0;  //если в RTR 29й бит 0, то это RTR 29 бит
+
+if (can_frame_type || !can_ID_type) return;   // ЕСЛИ ПРИЛЕТЕЛ RTR ИЛИ 11БИТ ЗАБИВАЕМ НА ЭТОТ ФРЕЙМ!!!
 
 priority  = (rxId_can & 0x10000000)>>28;  //  извлекаем из ID 1-битный флаг важности (приоритет) сообщения. (0 - высокий приоритет, 1 - низкий )
 msg_type = (rxId_can &   0xF000000)>>24;  //  извлекаем из ID 4-битный идентификатор типа сообщения   
 dev_addr  = (rxId_can &  0xFF0000)>>16;   //  извлекаем из ID 8-битный адрес отправителя 
 rem_addr = (rxId_can &   0xFF00)>>8;      //  извлекаем из ID 8-битный адрес получателя 
 dev_type = rxId_can;                      //  извлекаем из ID 8-битный тип устройства у получателя 
-
-
 
 //ниже отладка заголовка ID
 
@@ -35,29 +35,6 @@ if (errors) readErrorFlags_MCP2515 ();
 #ifdef type_node_master
 if (statusprint && errors) readErrorFlags_MCP2515 ();
 #endif
-/*
-if (ID_Print){
-Serial.println();
-if (rem_addr == node_address) Serial.println(F("-------CAN MESSAGE RX ADRRESSED TO ME-------"));
-else if (rem_addr == 0)       Serial.println(F("----------CAN BROADCAST MESSAGE RX----------"));
-else                          Serial.println(F("----------------CAN MESSAGE RX--------------"));
-Serial.print (F(" ID  ")); Serial.println(rxId_can, HEX);
-
-Serial.print(F(" type_msg  - "));  PrinT (msg_type, TypeMES); Serial.println ();
-Serial.print(F(" node_addr - ")); PrinT (dev_addr, ADDR); Serial.println ();
-Serial.print(F(" Rem_addr  - ")); PrinT (rem_addr, ADDR); Serial.println ();
-Serial.print(F(" Dev_type  - ")); PrinT (dev_type, TypeDEV); Serial.println ();
-Serial.print(F("DATA FRAME  "));  Serial.print ("    "); 
-if (len_can!=0) {for (int i=0; i<len_can; i++) {
-if (rxBuf_can[i]<=0x0F) Serial.print (F("0"));
-Serial.print (rxBuf_can[i], HEX); Serial.print (F(" ")); }}
-else Serial.println (F("NOT DATA, BECAUSE REMOTE FRAME"));
-Serial.println(); Serial.println(F("--------------------------------------------"));
-Serial.println();}
-#endif   */
-
-
-
 
 
 bool prin = 1;
@@ -67,11 +44,9 @@ if (msg_type == PARAMETER && !RXparametrprint) prin = 0;
   
   if (prin) {
     PrintSystemTime();
-   //Serial.println(); 
-  
+     
    Serial.print(F("              Принято  из  CAN:  "));
    
-
    PrinT (msg_type, TypeMES);  
   
    if (msg_type==COMMAND || msg_type==COMMAND_REPORT) {
@@ -141,9 +116,9 @@ case DIGITALWRITE:
   if (rxBuf_can[CAN_CommandType]>DIGITAL_INVERT) Command_NOActual = 2; break;
 case DIGITALWRITE_INVERT:
   if (rxBuf_can[CAN_CommandType]>DIGITAL_INVERT) Command_NOActual = 2; break;
-case PWM_WRITE:
+case PWMWRITE:
   if (rxBuf_can[CAN_CommandType]<PWM_SETTING || rxBuf_can[CAN_CommandType]>PWM_TURN_ON) Command_NOActual = 2; break;
-case PROCENT_WRITE:
+case PROCENTWRITE:
   if (rxBuf_can[CAN_CommandType]<DIMMER_SETTING || rxBuf_can[CAN_CommandType]>DIMMER_TURN_ON) Command_NOActual = 2; break;
 case IMPULSE_GND:
   if (rxBuf_can[CAN_CommandType]<IMPULSE_ON || rxBuf_can[CAN_CommandType]>IMPULSE_INVERT) Command_NOActual = 2; break;
@@ -513,16 +488,13 @@ TimerStatus = 1;}
 
 
 
-
-
-
-void TX(bool priority, uint8_t msg_type, uint8_t rem_addr, uint8_t dev_type, bool can_ID_type, bool can_frame_type, uint8_t DLC,  byte data[8])
+void TX(bool priority, uint8_t msg_type, uint8_t target_addr, uint8_t dev_type, bool can_ID_type, bool can_frame_type, uint8_t DLC,  byte data[8])
 {
 uint32_t txId_can;
 
 if (!can_ID_type) { txId_can = 5;}// тут как-то формируем 11 битный ID если нужно
 
-else  txId_can = (priority & 0xFFFFFFFF)<<28 | (msg_type & 0xFFFFFFFF)<<24 | (node_address & 0xFFFFFFFF)<<16 | (rem_addr & 0xFFFFFFFF)<<8 | dev_type ;
+else  txId_can = (priority & 0xFFFFFFFF)<<28 | (msg_type & 0xFFFFFFFF)<<24 | (node_address & 0xFFFFFFFF)<<16 | (target_addr & 0xFFFFFFFF)<<8 | dev_type ;
        
 
 if (can_ID_type){
@@ -563,7 +535,7 @@ else PrinT (dev_type, PAR);
  
  }else Serial.print (F("CAN Сообщение "));
 Serial.print (F("  Кому:  "));
-PrinT (rem_addr, ADDR); 
+PrinT (target_addr, ADDR); 
 Serial.print(F("  - ID ")); 
   Serial.print(txId_can, HEX);
 Serial.print ("    "); if (DLC!=0) {for (int i=0; i<DLC; i++) {
@@ -574,8 +546,9 @@ Serial.println();
 }
 else {Serial.print(F("Ошибка отправки CAN сообщения !!!  ")); Serial.print (sndStat); readErrorFlags_MCP2515 ();}}
 #endif  
-} 
-
 // вызов TX (priority, тип сообщения, адрес получателя, тип устройства, тип ID, тип FRAME, длина поля данных кадра, data)
 // тип ID     0 - 11 bit;   1 - 29 bit
 // тип FRAME  0 - DATA;     1 - REMOTE FRAME
+} 
+
+
