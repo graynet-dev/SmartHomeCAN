@@ -1,43 +1,41 @@
 
 
-void CAN_Start () {               // это setup
-  
+void CAN_Start ()                  // это setup
+{
   MCP2515_Init ();
-
-  pinmode(); // настройка портов (в зависимости от конфигурации массива device)
+  pinmode();                       // настройка портов (в зависимости от конфигурации массива device)
   Setup  = 1;
-   
-   }
-
-void CAN_Refresh () {              // это loop
-
-curMillis = millis();              // снимок системного времени
-
-RX();                              // чтение шины CAN
-
-#ifdef type_node_master
-StatusControl();                   // контроль статусов node_mk - заполнение массива StatusNode_OK[NODS_QUANTITY] (только для мастера)
-#endif 
-#if defined (type_node_slave) or defined (type_node_mk)
-
-DataStreamSend();                  // отправка параметров в CAN по факту изменения параметра и периодически (только для подчинённых)
-#endif
-
-SendCommand_queue();               // отправка команд из очереди
-
-LongCommandExecuting_buffer();     // отправка отчётов о долгих командах из очереди
-
-timers();                          // таймеры 
+}
 
 
+void CAN_Refresh ()                // это loop
+{              
+  curMillis = millis();            // снимок системного времени
 
-test ();                           // это так для теста инициирование отправки CAN команд через сериал монитор, потом убрать можно
+  RX();                            // чтение шины CAN
 
-  }
+  #ifdef type_node_master
+    StatusControl();               // контроль статусов node_mk - заполнение массива StatusNode_OK[NODS_QUANTITY] (только для мастера)
+  #endif 
+  #if defined (type_node_slave) or defined (type_node_mk)
+
+    DataStreamSend();              // отправка параметров в CAN по факту изменения параметра и периодически (только для подчинённых)
+  #endif
+
+  SendCommand_queue();             // отправка команд из очереди
+
+  LongCommandExecuting_buffer();   // отправка отчётов о долгих командах из очереди
+
+  timers();                        // таймеры 
+
+  test ();                         // это так для теста инициирование отправки CAN команд через сериал монитор, потом убрать можно
+
+}
 
 
 
-void MCP2515_Init () {
+void MCP2515_Init () 
+{
 
 byte SpeedCan = CAN_125KBPS;
 
@@ -86,8 +84,7 @@ if (!Setup) {
 
 #endif 
  can.setMode(MCP_NORMAL);    
- 
-    }
+}
 
 
 
