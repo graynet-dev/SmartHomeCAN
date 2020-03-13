@@ -9,19 +9,14 @@
 const byte second_dimension = 5 + AUTOSENT_NODES_QUANTITY ;
 
 #define parameters_quantity sizeof(parameter)/second_dimension
-byte parameter [][second_dimension] =   
+byte parameter [][second_dimension] =  { 
+{255,1,1,4,4,255,255}, // этy строку не трогаем
                                                                      
 //       тип             № датчика     тип данных            значение       посл.значение   таргет адрес 1-го узла          таргет адрес 2-го узла 
 //    параметра                                              параметра        параметра     автоматической отправки         автоматической отправки
-{
-{       air_t,              1,         BYTE_1_SIGNED,            200,             0,              broadcast,                node_19_Livingroom_main,}, //1 //датчик температуры
-{       air_t,              2,         BYTE_1_SIGNED,            100,             0,              node_7_Hallway_main,      node_19_Livingroom_main,}, //1 //датчик температуры
-{       air_t,              3,         BYTE_1_SIGNED,            50,              0,              node_7_Hallway_main,      node_19_Livingroom_main,}, //1 //датчик температуры
-{       air_h,              1,         BYTE_1,                   0,               0,              node_4_Net_center_Due1,   node_19_Livingroom_main,}, //2 //датчик влажности
-{       counter_elect_4,    1,         BYTE_4,                   7,               7,              node_4_Net_center_Due1,   NOT_SENT,               }, //52 //Счетчик электричества
-{counter_elect_4_SB2,       1,         SERVICE_BYTE,             8,               8,              NOT_SENT,                 NOT_SENT,               }, //53   сервисный байт
-{counter_elect_4_SB3,       1,         SERVICE_BYTE,             9,               9,              NOT_SENT,                 NOT_SENT,               }, //54   сервисный байт
-{counter_elect_4_SB4,       1,         SERVICE_BYTE,             10,              10,             NOT_SENT,                 NOT_SENT,               }, //55   сервисный байт
+
+{       Illum,              1,         BYTE_1_SIGNED,            0xBB,            0,              broadcast,                NOT_SENT,}, 
+
 
 
 };
