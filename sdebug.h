@@ -242,20 +242,23 @@ for (int i = 0; i<device_quantity; i++) {
 
 void parametersConfigControl (){
   bool alarm = 0;
+  bool alarm2 = 0;
+  
   for (int i = 0; i < parameters_quantity; i++ ){
 byte compare_type = parameter[i][PARAMETER_TYPE];
 byte compare_sens = parameter[i][PARAMETER_SENS];
     
-for (int k = 0 ; k < parameters_quantity; k++){if (k!=i && parameter[k][PARAMETER_TYPE]==compare_type && parameter[k][PARAMETER_SENS]==compare_sens) alarm = 1; }
-   
+for (int k = 0 ; k < parameters_quantity; k++)
+{if (k!=i && parameter[k][PARAMETER_TYPE]==compare_type && parameter[k][PARAMETER_SENS]==compare_sens) alarm = 1; }
+ if   (compare_sens==0) alarm2 = 1;
    }
     
     Serial.println();
- if  (!alarm) {Serial.print (F("Массив параметров сконфигурирован успешно! Количество параметров: ")); Serial.println(parameters_quantity);}
- else Serial.println (F("Неправильно сконфигурирован массив параметров!!!!!!  На одном типе параметров найдены датчики с одинаковым номером!"));
+ if      (!alarm && !alarm2) {Serial.print (F("Массив параметров сконфигурирован успешно! Количество параметров: ")); Serial.println(parameters_quantity);}
+ if (alarm)  Serial.println (F("Неправильно сконфигурирован массив параметров!!!!!!  На одном типе параметров найдены датчики с одинаковым номером!"));
+ if (alarm2 )Serial.println (F("Неправильно сконфигурирован массив параметров!!!!!!  Найден датчик с номером 0, номера датчиков должны начинаться с 1"));
     
-    
-    
+   
     }
   
  
