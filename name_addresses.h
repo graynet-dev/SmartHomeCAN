@@ -1,9 +1,8 @@
 
-// ЗДЕСЬ СОЗДАЕТСЯ КАК БЫ КАРКАС УМНОГО ДОМА. А ИМЕННО - НАЗВАНИЯ (АДРЕСА) УЗЛОВ, ПАРАМЕТРОВ(ДАННЫЕ С ДАТЧИКОВ) И ДЕВАЙСОВ (ИСП. УСТРОЙСТВ). ЭТОТ ФАЙЛ БУДЕТ ЕДИНЫЙ ДЛЯ ВСЕХ УЗЛОВ.
+// В ЭТОМ ФАЙЛЕ СОЗДАЕТСЯ КАК БЫ КАРКАС УМНОГО ДОМА. А ИМЕННО - НАЗВАНИЯ (АДРЕСА) УЗЛОВ, ПАРАМЕТРОВ(ДАННЫЕ С ДАТЧИКОВ) И ДЕВАЙСОВ (ИСП. УСТРОЙСТВ). ЭТОТ ФАЙЛ БУДЕТ ЕДИНЫЙ ДЛЯ ВСЕХ УЗЛОВ.
 // ПОЭТОМУ ФАЙЛ ЗАПОЛНЯЕМ ОДИН РАЗ И МОЖНО ЕГО КОПИРОВАТЬ СРАЗУ ДЛЯ ВСЕХ УЗЛОВ.
 
-
-//ЗДЕСЬ ЗАДАЁМ СПИСОК НАЗВАНИЙ (АДРЕСОВ) ВСЕХ УЗЛОВ, ИСПОЛЬЗУЕМЫХ В СИСТЕМЕ  SmartHomeCAN
+//ЗДЕСЬ ЗАДАЁМ СПИСОК НАЗВАНИЙ (АДРЕСОВ) ВСЕХ ВОЗМОЖНЫХ УЗЛОВ, ИСПОЛЬЗУЕМЫХ В СИСТЕМЕ  SmartHomeCAN
 
 enum Node_addr_enum
 {
@@ -31,6 +30,38 @@ enum Node_addr_enum
     node_21_Cabinet_main,                  //21                             
     NODS_QUANTITY                          //22 size    
 };               
+
+//ЗДЕСЬ ЗАДАЁМ СПИСОК НАЗВАНИЙ (АДРЕСОВ) ВСЕХ УЗЛОВ, КАКИЕ В ДАННЫЙ МОМЕНТ ПОДКЛЮЧЕНЫ К CAN СЕТИ (КОМПЛЕКТАЦИЯ CAN СЕТИ из списка выше)
+//ДАННАЯ КОНФИГУРАЦИЯ БУДЕТ ИСПОЛЬЗОВАТЬСЯ ТОЛЬКО МАСТЕРОМ
+
+#ifdef type_node_master
+const bool NodeCANpresence[NODS_QUANTITY] = 
+{
+  0, //  broadcast,                            //0
+  0, //  node_1_Net_center_PC,                 //1
+  0, //  node_2_Net_center_oraPi1,             //2
+  0, //  node_3_Net_center_oraPi2,             //3 
+  1, //  node_4_Net_center_Due1,               //4
+  0, //  node_5_Net_center_Due2,               //5
+  0, //  node_6_Hallway_net_center,            //6
+  1, //  node_7_Hallway_main,                  //7
+  0, //  node_8_Hallway_light,                 //8
+  0, //  node_9_Kitchen_net_center,            //9
+  1, //  node_10_Kitchen_main,                  //10
+  0, //  node_11_Kitchen_light,                 //11
+  0, //  node_12_WC_main,                       //12
+  0, //  node_13_WC_waterleak,                  //13
+  0, //  node_14_Bathroom_main,                 //14
+  0, //  node_15_Boxroom_main,                  //15
+  0, //  node_16_Balcony_meteo,                 //16                          
+  0, //  node_17_Loggia_main,                   //17                             
+  0, //  node_18_Loggia_recuperator,            //18                             
+  0, //  node_19_Livingroom_main,               //19                             
+  0, //  node_20_Bedroom_main,                  //20                             
+  0, //  node_21_Cabinet_main,                  //21                             
+    };
+#endif 
+
 
 // ЗДЕСЬ ЗАДАЁМ ВСЕ ВОЗМОЖНЫЕ НАЗВАНИЯ (АДРЕСА) ПАРАМЕТРОВ, ПРИМЕНЯЕМЫХ В УМНОМ ДОМЕ
 
